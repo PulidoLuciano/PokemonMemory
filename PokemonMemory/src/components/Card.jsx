@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 
 function getStyle(type){
-    console.log(type);
     switch(type){
         case "normal":
             return {backgroundColor: "#A8A090aa", border: "#A8A090 5px solid"}
@@ -46,7 +45,7 @@ function getStyle(type){
 
 export default function Card({pokemon, handleClick}){
     
-    const [data, setData] = useState({sprites: {front_default: null}, types:[{type: {name:null}}]});
+    const [data, setData] = useState({id:0, sprites: {front_default: null}, types:[{type: {name:null}}]});
 
     const cardStyle = getStyle(data.types[0].type.name);
 
@@ -55,7 +54,7 @@ export default function Card({pokemon, handleClick}){
     }, [])
 
     return(
-        <button className="pokemon-card" onClick={handleClick} style={cardStyle}>
+        <button className="pokemon-card" name={pokemon.name} onClick={handleClick} style={cardStyle}>
             <img src={data.sprites.front_default} alt={pokemon.name}/>
             <h2>{pokemon.name.toUpperCase()}</h2>
         </button>

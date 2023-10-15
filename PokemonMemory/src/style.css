@@ -81,6 +81,14 @@ main{
     width: 100%;
 }
 
+dialog{
+    text-align: center;
+    padding: 50px;
+    border: #ff0000 5px solid;
+    border-radius: 10%;
+    margin: auto;
+}
+
 @media (max-width:500px){
     #score-section{
         align-items: center;
