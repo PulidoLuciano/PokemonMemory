@@ -59,8 +59,8 @@ main{
 
 #cards-section{
     display: grid;
-    grid-template-rows: repeat(2, 325px);
-    grid-template-columns: repeat(4, 275px);
+    grid-template-rows: repeat(auto-fill, 325px);
+    grid-template-columns: repeat(auto-fill, 275px);
     gap: 30px;
     margin: 50px 12px;
     max-width: 1400px;
