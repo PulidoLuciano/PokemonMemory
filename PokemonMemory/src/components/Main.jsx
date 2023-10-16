@@ -1,44 +1,53 @@
 import { useEffect, useState } from "react"
 import Card from "./Card";
 
-function shuffle(array) {
-    let currentIndex = array.length,  randomIndex;
-  
-    // While there remain elements to shuffle.
-    while (currentIndex > 0) {
-  
-      // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-  
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
-    }
-  
-    return array;
-  }
-
 export default function Main(){
     
     const [score, setScore] = useState(0);
     const [maxScore, setMaxScore] = useState(0);
     const [pokemon, setPokemon] = useState([]);
     const [chosePokemon, setChosePokemon] = useState([]);
+    const [actualPokemon, setActualPokemon] = useState([]);
     
     useEffect(() => {
         fetch("https://pokeapi.co/api/v2/pokedex/2").then(res => res.json())
         .then(data => {
-            setPokemon(data.pokemon_entries.splice(0,8));
-        });    
+            setPokemon(data.pokemon_entries);
+            setActualPokemon(getPokemon(data.pokemon_entries));
+        }).catch(error =>
+            console.error(error)
+        )  
     }, []);
+
+    useEffect(() => {
+        if(chosePokemon.length != 0 && score != pokemon.length) setActualPokemon(getPokemon(pokemon));
+    }, [chosePokemon])
 
     useEffect(() => {
         let wonDialog = document.getElementById("wonDialog");
         if(score == pokemon.length && pokemon.length) wonDialog.showModal();
         if(score > maxScore) setMaxScore(score);
-        setPokemon(shuffle(pokemon));
-    }, [score])
+    }, [score]);
+
+    function getPokemon(list){
+        let array = [];
+        let someUnchosen = false;
+        while(array.length < 8){
+            let newItem = list[Math.trunc(Math.random() * list.length)]
+            if(!array.includes(newItem)) array = array.concat(newItem);
+        }
+
+        while(!someUnchosen){
+            let found = array.find(element => !chosePokemon.includes(element.pokemon_species.name));
+            console.log(found);
+            if(found) someUnchosen = true;
+            else{
+                console.log("Change needed")
+                array[Math.trunc(Math.random() * array.length)] = list.find(element => !chosePokemon.includes(element.pokemon_species.name));
+            }
+        }
+        return array;
+    }
 
     function handleCardClick(event){
         let id = event.currentTarget.name;
@@ -56,6 +65,7 @@ export default function Main(){
         event.currentTarget.close();
         setScore(0);
         setChosePokemon([]);
+        setActualPokemon(getPokemon(pokemon));
     }
 
     return(
@@ -72,7 +82,7 @@ export default function Main(){
             </dialog>
             <section id="cards-section">
                 {
-                    pokemon.map(poke => <Card handleClick={handleCardClick} pokemon={poke.pokemon_species} key={poke.entry_number}></Card>)
+                    actualPokemon.map(poke => <Card handleClick={handleCardClick} pokemon={poke.pokemon_species} key={poke.entry_number}></Card>)
                 }
             </section>
             <section id="score-section">
